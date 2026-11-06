@@ -7,12 +7,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/REPLACE_ME/device-tools-for-android.git"
+    "url": "https://github.com/MehdiBrahmi/vscode-device-tools-for-android.git"
   },
   "bugs": {
-    "url": "https://github.com/REPLACE_ME/device-tools-for-android/issues"
+    "url": "https://github.com/MehdiBrahmi/vscode-device-tools-for-android/issues"
   },
-  "homepage": "https://github.com/REPLACE_ME/device-tools-for-android#readme",
+  "homepage": "https://github.com/MehdiBrahmi/vscode-device-tools-for-android#readme",
   "icon": "media/icon.png",
   "galleryBanner": {
     "color": "#1e1f22",
