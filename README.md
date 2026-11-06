@@ -7,6 +7,9 @@ Device tooling for Android inside VS Code, inspired by the tools found in Androi
 ## Features
 
 ### Running Devices
+
+![Running Devices](media/screenshots/running-devices.png)
+
 - Live screen of Android emulators and physical devices, with touch, scroll, keyboard, back/home/overview, power, volume and rotation controls.
 - Emulators are streamed through the emulator gRPC API (same approach as Android Studio). Physical devices use scrcpy. A screenshot loop is the last resort.
 - **Device frame (skin)** around the screen when the AVD has one, toggled from the ⋮ menu.
@@ -15,11 +18,17 @@ Device tooling for Android inside VS Code, inspired by the tools found in Androi
 - `+` button to start a virtual device or pair a device over Wi-Fi.
 
 ### Device Manager
+
+![Device Manager](media/screenshots/device-manager.png)
+
 - Table of your AVDs and connected devices (name, API, type).
 - Create, edit, start, cold boot, stop, wipe data and delete AVDs.
 - Start/stop progress indicators, like Android Studio.
 
 ### Logcat
+
+![Logcat](media/screenshots/logcat.png)
+
 - Studio-like filter language: `tag:`, `package:`, `process:`, `message:`, `line:`, `level:`, `age:`, `is:crash`, `is:stacktrace`, with `=` (exact) and `~` (regex) variants, `-` negation, parentheses, `&`/`|`.
 - Autocompletion of keys and values (tags and packages seen in the logs), filter history with match counts, favorites, match case.
 - Standard and compact formats, soft-wrap, pause, restart, stack trace navigation, screenshot and recording buttons.
