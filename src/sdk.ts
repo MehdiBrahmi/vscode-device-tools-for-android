@@ -57,7 +57,31 @@ export function spawnDetached(cmd: string, args: string[]) {
   p.unref();
 }
 
-export interface Device { serial: string; state: string; model?: string; avdName?: string; }
+export interface Device { serial: string; state: string; model?: string; avdName?: string; name?: string; }
+
+const propCache = new Map<string, { model: string; api: string }>();
+
+async function deviceProps(serial: string) {
+  let p = propCache.get(serial);
+  if (!p) {
+    const get = (k: string) => adb(serial, 'shell', 'getprop', k).then((v) => v.trim()).catch(() => '');
+    const [model, full, sdk] = await Promise.all([get('ro.product.model'), get('ro.build.version.sdk_full'), get('ro.build.version.sdk')]);
+    p = { model, api: full || sdk };
+    if (p.model) { propCache.set(serial, p); }
+  }
+  return p;
+}
+
+// Same naming as Android Studio: AVD display name, or "<model> API <level>" for physical devices.
+async function friendlyName(d: Device): Promise<string> {
+  if (d.avdName) {
+    const avd = listAvds().find((a) => a.name === d.avdName);
+    return avd?.config['avd.ini.displayname'] || d.avdName.replace(/_/g, ' ');
+  }
+  const p = await deviceProps(d.serial);
+  const model = p.model || d.model?.replace(/_/g, ' ') || d.serial;
+  return p.api ? `${model} API ${p.api}` : model;
+}
 
 export async function listDevices(): Promise<Device[]> {
   let out: string;
@@ -73,6 +97,7 @@ export async function listDevices(): Promise<Device[]> {
         d.avdName = (await adb(d.serial, 'emu', 'avd', 'name')).split('\n')[0].trim();
       } catch { /* ignore */ }
     }
+    if (d.state === 'device') { d.name = await friendlyName(d); }
     devices.push(d);
   }
   return devices;

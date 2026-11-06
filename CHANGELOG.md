@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Device names now match Android Studio: AVD display name for emulators, "Model API level (serial)" for physical devices (Running Devices and Logcat).
+
 ## 0.1.1
 
 - Logcat: search bar (`Cmd/Ctrl+F`) with highlighting, match counter, next/previous, match case, whole word and regex.

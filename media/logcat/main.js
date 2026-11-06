@@ -493,7 +493,7 @@
         const sel = $('dev'); const sig = JSON.stringify(m.list) + serial;
         if (sel.dataset.sig !== sig) {
           sel.dataset.sig = sig;
-          sel.innerHTML = m.list.length ? m.list.map((d) => `<option value="${esc(d.serial)}">${esc(d.avdName || d.model || d.serial)} (${esc(d.serial)})</option>`).join('') : '<option value="">No devices</option>';
+          sel.innerHTML = m.list.length ? m.list.map((d) => `<option value="${esc(d.serial)}">${esc(d.name || d.avdName || d.model || d.serial)} (${esc(d.serial)})</option>`).join('') : '<option value="">No devices</option>';
           sel.value = serial;
         }
         break;

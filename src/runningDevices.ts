@@ -179,7 +179,7 @@ export class RunningDeviceView implements vscode.WebviewViewProvider {
   private async refreshDevices() {
     const devs = (await listDevices()).filter((d) => d.state === 'device');
     if (!this.serial || !devs.some((d) => d.serial === this.serial)) { this.serial = devs[0]?.serial; }
-    this.post({ type: 'devices', devices: devs.map((d) => ({ serial: d.serial, label: d.avdName || d.model || d.serial })), serial: this.serial });
+    this.post({ type: 'devices', devices: devs.map((d) => ({ serial: d.serial, label: d.name || d.avdName || d.model || d.serial, physical: !d.serial.startsWith('emulator-') })), serial: this.serial });
     this.skin = skinForAvd(devs.find((d) => d.serial === this.serial)?.avdName);
     this.post({ type: 'skin', skin: this.skin ? this.skinPayload(this.skin) : null });
   }
@@ -483,7 +483,7 @@ addEventListener('message',({data:m})=>{
  else if(m.type==='recording'){rec.classList.toggle('on',m.on);rec.title=m.on?'Stop recording':'Record screen';clearInterval(tm);timer.textContent='';if(m.on){const t0=Date.now();tm=setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);timer.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},500)}}
  else if(m.type==='frame'){img.src='data:image/png;base64,'+m.data;msg.textContent=m.w+'×'+m.h}
  else if(m.type==='mode'){setMode(m.mode);spsKey=undefined;if(m.mode==='scrcpy'&&typeof VideoDecoder==='undefined')send({type:'noDecoder'})}
- else if(m.type==='devices'){document.body.classList.toggle('empty',!m.devices.length);dev.innerHTML=m.devices.map(d=>'<option value="'+d.serial+'">'+d.label+'</option>').join('');if(m.serial)dev.value=m.serial;tdot.style.display=m.devices.length?'block':'none';tab.classList.toggle('multi',m.devices.length>1);
+ else if(m.type==='devices'){document.body.classList.toggle('empty',!m.devices.length);dev.innerHTML=m.devices.map(d=>'<option value="'+d.serial+'">'+d.label+(d.physical?' ('+d.serial+')':'')+'</option>').join('');if(m.serial)dev.value=m.serial;tdot.style.display=m.devices.length?'block':'none';tab.classList.toggle('multi',m.devices.length>1);
   if(!m.devices.length){msg.textContent='No device. Start an emulator or connect a phone.';img.removeAttribute('src');ctx.clearRect(0,0,cv.width,cv.height)}}
  else if(m.type==='select'){dev.value=m.serial}
  else if(m.type==='skin')setSkin(m.skin);

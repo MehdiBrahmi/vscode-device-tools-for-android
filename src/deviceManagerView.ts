@@ -111,7 +111,7 @@ export class DeviceManagerView implements vscode.WebviewViewProvider {
     for (const d of devices.filter((x) => !x.serial.startsWith('emulator-') && x.state === 'device')) {
       const info = await this.physicalInfo(d.serial);
       nodes.set('dev:' + d.serial, d);
-      rows.push({ id: 'dev:' + d.serial, name: d.model || d.serial, sub: info.sub, api: info.api, type: 'Physical', running: true, startable: false });
+      rows.push({ id: 'dev:' + d.serial, name: d.model?.replace(/_/g, ' ') || d.serial, sub: info.sub, api: info.api, type: 'Physical', running: true, startable: false });
     }
     this.nodes = nodes;
     const sig = JSON.stringify(rows);
