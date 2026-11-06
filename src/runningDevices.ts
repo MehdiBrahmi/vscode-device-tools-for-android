@@ -283,7 +283,10 @@ export class RunningDeviceView implements vscode.WebviewViewProvider {
 
   private async rotate(serial: string, dir: number) {
     const cur = parseInt((await adb(serial, 'shell', 'settings', 'get', 'system', 'user_rotation')).trim(), 10) || 0;
-    const next = String((cur + (dir < 0 ? 3 : 1)) % 4);
+    const step = dir < 0 ? 3 : 1;
+    let n = (cur + step) % 4;
+    if (n === 2) { n = (n + step) % 4; } // phones ignore 180°, which would make the click look dead
+    const next = String(n);
     await adb(serial, 'shell', 'cmd', 'window', 'user-rotation', 'lock', next).catch(async () => {
       await adb(serial, 'shell', 'settings', 'put', 'system', 'accelerometer_rotation', '0');
       await adb(serial, 'shell', 'settings', 'put', 'system', 'user_rotation', next);
