@@ -1,1 +1,1 @@
-{ "compilerOptions": { "module": "commonjs", "target": "ES2022", "outDir": "out", "rootDir": "src", "strict": true, "sourceMap": true, "skipLibCheck": true }, "exclude": ["node_modules", "out"] }
+{ "compilerOptions": { "module": "commonjs", "target": "ES2022", "outDir": "out", "rootDir": "src", "strict": true, "sourceMap": true, "skipLibCheck": true, "types": ["node", "vscode"] }, "exclude": ["node_modules", "out"] }

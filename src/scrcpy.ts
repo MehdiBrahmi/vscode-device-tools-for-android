@@ -22,7 +22,7 @@ function connectWithRetry(port: number, isStopped: () => boolean, attempts = 100
       if (isStopped()) { return reject(new Error('stopped')); }
       const sock = net.connect(port, '127.0.0.1');
       let got = false;
-      sock.once('data', (d) => { got = true; resolve({ sock, first: d }); });
+      sock.once('data', (d: Buffer) => { got = true; resolve({ sock, first: d }); });
       sock.on('error', () => { /* retried on close */ });
       sock.on('close', () => {
         if (got) { return; }
@@ -87,7 +87,7 @@ export class ScrcpySession {
         buf = buf.subarray(12 + size);
       }
     };
-    sock.on('data', (d) => { buf = buf.length ? Buffer.concat([buf, d]) : d; parse(); });
+    sock.on('data', (d: Buffer) => { buf = buf.length ? Buffer.concat([buf, d]) : d; parse(); });
     sock.on('close', () => this.close('video stream closed'));
     sock.on('error', () => {});
     parse();

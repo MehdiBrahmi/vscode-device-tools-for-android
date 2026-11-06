@@ -4,7 +4,7 @@ Thanks for helping! Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) first.
 
 ## Prerequisites
 
-- **Node.js 20+** and npm (`.nvmrc` pins 20).
+- **Node.js 22+** and npm (`.nvmrc` pins 22; required by `@vscode/vsce` 4).
 - **VS Code 1.85+**.
 - **Android SDK** with `platform-tools`, `emulator`, `cmdline-tools` and at least one system image, to test against real emulators. Set `ANDROID_HOME` or the `android.sdkPath` setting.
 - Optional: a physical Android device with USB debugging, to test the scrcpy path.
