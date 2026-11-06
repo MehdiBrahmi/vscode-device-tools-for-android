@@ -486,7 +486,7 @@ bind(img);bind(cv);
 
 function setMode(m){mode=m;const c=m!=='screencap';target=c?cv:img;cv.style.display=c?'block':'none';img.style.display=c?'none':'block'}
 function onRgba(m){const d=m.data instanceof Uint8Array?m.data:new Uint8Array(m.data);
- if(cv.width!==m.w||cv.height!==m.h){cv.width=m.w;cv.height=m.h;const k=devicePixelRatio||1;if(!skinOn){cv.style.width=(m.w/k)+'px';cv.style.height=(m.h/k)+'px'}}const wasLand=fw>fh;fw=m.w;fh=m.h;if(skin&&(fw>fh)!==wasLand)sendVp();
+ if(cv.width!==m.w||cv.height!==m.h){cv.width=m.w;cv.height=m.h;const k=devicePixelRatio||1;if(!skinOn){cv.style.width=(m.w/k)+'px';cv.style.height=(m.h/k)+'px'}}const wasLand=fw>fh;fw=m.w;fh=m.h;if((fw>fh)!==wasLand){layout();sendVp()}
  ctx.putImageData(new ImageData(new Uint8ClampedArray(d.buffer,d.byteOffset,m.w*m.h*4),m.w,m.h),0,0);
  msg.textContent=fw+'×'+fh+' · emulator';send({type:'ack'})}
 addEventListener('message',({data:m})=>{
