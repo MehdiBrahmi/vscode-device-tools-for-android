@@ -50,4 +50,4 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 1. Update `version` in `package.json` and `CHANGELOG.md`.
 2. Tag `vX.Y.Z` and push the tag. The `Release` workflow publishes to the VS Code Marketplace (`VSCE_PAT` secret) and Open VSX (`OVSX_PAT` secret) and attaches the `.vsix` to a GitHub release.
-3. First time only: create the `mehdibrahmi` publisher at https://marketplace.visualstudio.com/manage (it must match the `publisher` field in `package.json`).
+3. First time only: create the `MehdiBrahmi` publisher at https://marketplace.visualstudio.com/manage (it must match the `publisher` field in `package.json`).
