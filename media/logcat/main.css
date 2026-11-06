@@ -80,3 +80,17 @@ body:not(.vscode-light) #hl .kv{color:transparent}
 #cc{width:auto;padding:0 5px;font-size:12px;font-weight:600}
 #cc.active{background:var(--vscode-inputOption-activeBackground);outline:1px solid var(--vscode-inputOption-activeBorder,transparent)}
 .hsep{height:1px;background:var(--vscode-panel-border,#555);margin:4px 6px}
+
+#sbar{display:none;align-items:center;gap:6px;padding:4px 6px;border-bottom:1px solid var(--vscode-panel-border,#444)}
+#sbox{flex:1;max-width:520px;min-width:140px;display:flex;align-items:center;gap:2px;height:24px;padding-left:6px;background:var(--vscode-input-background);border:1px solid var(--vscode-input-border,transparent);border-radius:3px}
+#sbox:focus-within{border-color:var(--vscode-focusBorder)}
+#sbox.error{border-color:var(--vscode-inputValidation-errorBorder,#f14c4c)}
+#sbox .codicon-search{opacity:.7;margin-right:2px}
+#sq{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--vscode-input-foreground);font-family:"JetBrains Mono",var(--vscode-editor-font-family),monospace;font-size:12px}
+#sq::placeholder{color:var(--vscode-input-placeholderForeground)}
+#sbox .opt{width:auto;padding:0 5px;font-size:12px;font-weight:600}
+#sbox .opt.active{background:var(--vscode-inputOption-activeBackground);outline:1px solid var(--vscode-inputOption-activeBorder,transparent)}
+#scount{font-size:11px;opacity:.7;white-space:nowrap;min-width:60px}
+#sbar .ib:disabled{opacity:.35;cursor:default}
+mark{background:var(--vscode-editor-findMatchHighlightBackground,#ea5c0055);color:inherit;border-radius:2px}
+.row.cur mark{background:var(--vscode-editor-findMatchBackground,#515c6a);outline:1px solid var(--vscode-editor-findMatchBorder,#ea5c00)}

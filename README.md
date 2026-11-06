@@ -29,6 +29,7 @@ Device tooling for Android inside VS Code, inspired by the tools found in Androi
 
 ![Logcat](media/screenshots/logcat.png)
 
+- **Search in the log** (`Cmd/Ctrl+F` or the magnifier button): highlights every match, shows the `n/total` counter, and jumps with `Enter` / `Shift+Enter` (or the arrows). Options: match case (`Cc`), whole word (`W`) and regex (`.*`).
 - Studio-like filter language: `tag:`, `package:`, `process:`, `message:`, `line:`, `level:`, `age:`, `is:crash`, `is:stacktrace`, with `=` (exact) and `~` (regex) variants, `-` negation, parentheses, `&`/`|`.
 - Autocompletion of keys and values (tags and packages seen in the logs), filter history with match counts, favorites, match case.
 - Standard and compact formats, soft-wrap, pause, restart, stack trace navigation, screenshot and recording buttons.

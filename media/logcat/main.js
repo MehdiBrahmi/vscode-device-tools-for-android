@@ -9,11 +9,13 @@
   let paused = false, pending = [], stick = true, serial = '', compiled = null, pkgMap = {};
   const sc = $('sc'), win = $('win'), spacer = $('spacer'), q = $('q'), hl = $('hl');
   let icons = {};
+  const S = { open: false, re: null, rows: [], cur: -1, err: false, dirty: false, scroll: false, timer: 0 };
 
   const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const tagColor = (t) => { let h = 0; for (let i = 0; i < t.length; i++) { h = (h * 31 + t.charCodeAt(i)) >>> 0; } return `hsl(${h % 360},var(--tag-s),var(--tag-l))`; };
   const svg = (n) => icons[n] || '';
   const codicon = (n) => `<span class="codicon codicon-${n}"></span>`;
+  const MOD = /Mac/.test(navigator.platform) ? '⌘' : 'Ctrl+';
 
   function btn(id, title, html, onclick, parent) {
     const b = document.createElement('button');
@@ -23,13 +25,14 @@
 
   function buildToolbar() {
     const side = $('side'); side.innerHTML = '';
-    btn('b-clear', 'Clear Logcat', svg('lc-delete'), () => { entries = []; rows = []; pending = []; render(); vs.postMessage({ type: 'clear' }); }, side);
+    btn('b-clear', 'Clear Logcat', svg('lc-delete'), () => { entries = []; rows = []; pending = []; S.dirty = true; render(); vs.postMessage({ type: 'clear' }); }, side);
     btn('b-pause', 'Pause Logcat', svg('lc-pause'), togglePause, side);
     btn('b-restart', 'Restart Logcat', svg('lc-refresh'), () => vs.postMessage({ type: 'restart' }), side);
     btn('b-end', 'Scroll to the End', svg('lc-scroll-end'), () => { stick = true; render(); }, side);
     btn('b-prev', 'Up the Stack Trace', svg('lc-up'), () => jumpStack(-1), side);
     btn('b-next', 'Down the Stack Trace', svg('lc-down'), () => jumpStack(1), side);
     btn('b-wrap', 'Soft-Wrap', svg('lc-softwrap'), () => { st.wrap = !st.wrap; save(); applyWrap(); }, side);
+    btn('b-search', `Search (${MOD}F)`, codicon('search'), () => (S.open ? closeSearch() : openSearch()), side).classList.toggle('on', S.open);
     const sep = document.createElement('div'); sep.className = 'hsep'; side.appendChild(sep);
     btn('b-shot', 'Screen Capture', svg('screenshot'), () => vs.postMessage({ type: 'screenshot' }), side);
     btn('b-rec', 'Screen Record', svg('record'), () => vs.postMessage({ type: 'record' }), side);
@@ -72,11 +75,12 @@
       entries.push(e);
       if (visible(e)) { e.vis = true; pushRows(e); }
     }
+    S.dirty = true;
     if (entries.length > max * 1.1) { entries = entries.slice(entries.length - max); rebuild(); }
   }
 
   function rebuild() {
-    rows = [];
+    rows = []; S.dirty = true;
     for (const e of entries) { e.vis = visible(e); if (e.vis) { pushRows(e); } }
   }
 
@@ -103,15 +107,158 @@
     const prev = rows[i - 1];
     const first = li === 0;
     const hideTag = first && prev && prev.e.tag === e.tag && prev.e.pid === e.pid;
-    const msg = esc(e.lines[li]);
+    const msg = hx(e.lines[li]);
+    const cur = S.cur >= 0 && S.rows[S.cur] === i ? ' cur' : '';
     if (st.fmt === 'compact') {
-      const head = first ? `<span class="ctime">${e.ts.slice(11)}</span><span class="lvb">${e.lv}</span>` : '<span class="ctime"></span><span class="lvb" style="visibility:hidden"> </span>';
-      const tg = first && !hideTag ? `<span style="color:${tagColor(e.tag)}">${esc(e.tag)}</span>: ` : '';
-      return `<div class="row lv-${e.lv}" data-i="${i}" style="height:${H}px">${head}<span class="m">${tg}${msg}</span></div>`;
+      const head = first ? `<span class="ctime">${hx(e.ts.slice(11))}</span><span class="lvb">${e.lv}</span>` : '<span class="ctime"></span><span class="lvb" style="visibility:hidden"> </span>';
+      const tg = first && !hideTag ? `<span style="color:${tagColor(e.tag)}">${hx(e.tag)}</span>: ` : '';
+      return `<div class="row lv-${e.lv}${cur}" data-i="${i}" style="height:${H}px">${head}<span class="m">${tg}${msg}</span></div>`;
     }
     const lv = first ? `<span class="lvb">${e.lv}</span>` : '<span class="lvb" style="visibility:hidden"> </span>';
-    return `<div class="row lv-${e.lv}" data-i="${i}" style="height:${st.wrap ? 'auto' : H + 'px'}"><span class="ts">${first ? e.ts : ''}</span><span class="pt">${first ? e.pid + '-' + e.tid : ''}</span><span class="tg" style="color:${tagColor(e.tag)}" title="${esc(e.tag)}">${first && !hideTag ? esc(e.tag) : ''}</span><span class="pk" title="${esc(e.pkg)}">${first ? esc(e.pkg) : ''}</span>${lv}<span class="m">${msg}</span></div>`;
+    return `<div class="row lv-${e.lv}${cur}" data-i="${i}" style="height:${st.wrap ? 'auto' : H + 'px'}"><span class="ts">${first ? hx(e.ts) : ''}</span><span class="pt">${first ? hx(e.pid + '-' + e.tid) : ''}</span><span class="tg" style="color:${tagColor(e.tag)}" title="${esc(e.tag)}">${first && !hideTag ? hx(e.tag) : ''}</span><span class="pk" title="${esc(e.pkg)}">${first ? hx(e.pkg) : ''}</span>${lv}<span class="m">${msg}</span></div>`;
   }
+
+  // ---- search in the log (find bar) ----
+  function hx(s) {
+    const re = S.re;
+    if (!re || !s) { return esc(s || ''); }
+    re.lastIndex = 0;
+    let out = '', p = 0, m;
+    while ((m = re.exec(s))) {
+      if (!m[0]) { re.lastIndex++; continue; }
+      out += esc(s.slice(p, m.index)) + '<mark>' + esc(m[0]) + '</mark>'; p = m.index + m[0].length;
+    }
+    return out + esc(s.slice(p));
+  }
+
+  // Fields displayed for a row, so that the search only matches what is visible.
+  function rowFields(i) {
+    const { e, i: li } = rows[i];
+    const prev = rows[i - 1];
+    const f = [];
+    if (li === 0) {
+      const tag = prev && prev.e.tag === e.tag && prev.e.pid === e.pid ? '' : e.tag;
+      if (st.fmt === 'compact') { f.push(e.ts.slice(11), tag); } else { f.push(e.ts, e.pid + '-' + e.tid, tag, e.pkg); }
+    }
+    f.push(e.lines[li]);
+    return f;
+  }
+
+  function buildRe() {
+    S.err = false;
+    const t = S.open ? $('sq').value : '';
+    if (!t) { return null; }
+    try {
+      let src = st.srx ? t : t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if (st.sw) { src = `\\b(?:${src})\\b`; }
+      return new RegExp(src, st.scc ? 'g' : 'gi');
+    } catch { S.err = true; return null; }
+  }
+
+  function updateCount() {
+    const n = S.rows.length;
+    $('scount').textContent = !S.re ? '' : n ? `${S.cur + 1}/${n.toLocaleString('en-US')}` : 'No results';
+    $('sbox').classList.toggle('error', S.err);
+    $('s-up').disabled = $('s-down').disabled = !n;
+  }
+
+  function scheduleSearch(keep, delay) {
+    if (!S.open) { return; }
+    if (S.timer && keep) { return; }
+    clearTimeout(S.timer);
+    S.timer = setTimeout(() => { S.timer = 0; runSearch(keep); }, delay);
+  }
+
+  function runSearch(keep) {
+    S.dirty = false;
+    const prev = S.rows[S.cur];
+    S.re = buildRe();
+    const m = [];
+    if (S.re) {
+      for (let i = 0; i < rows.length; i++) {
+        for (const f of rowFields(i)) { if (f) { S.re.lastIndex = 0; if (S.re.test(f)) { m.push(i); break; } } }
+      }
+    }
+    S.rows = m;
+    if (!m.length) { S.cur = -1; updateCount(); render(); return; }
+    if (keep && prev != null) {
+      const k = m.indexOf(prev);
+      S.cur = k >= 0 ? k : Math.min(Math.max(S.cur, 0), m.length - 1);
+      updateCount(); render();
+    } else {
+      const top = st.wrap ? 0 : Math.floor(sc.scrollTop / H);
+      const k = m.findIndex((x) => x >= top);
+      S.cur = k >= 0 ? k : m.length - 1;
+      reveal();
+    }
+  }
+
+  function reveal() {
+    const r = S.rows[S.cur];
+    updateCount();
+    if (r == null) { render(); return; }
+    stick = false;
+    if (st.wrap) { S.scroll = true; } else if (r * H < sc.scrollTop || (r + 1) * H > sc.scrollTop + sc.clientHeight) {
+      sc.scrollTop = Math.max(0, r * H - sc.clientHeight / 2 + H / 2);
+    }
+    render();
+  }
+
+  function go(dir) {
+    if (!S.rows.length) { return; }
+    S.cur = (S.cur + dir + S.rows.length) % S.rows.length;
+    reveal();
+  }
+
+  function openSearch() {
+    const bar = $('sbar'), input = $('sq');
+    S.open = true; bar.style.display = 'flex';
+    $('b-search')?.classList.add('on');
+    const sel = String(getSelection() || '').trim();
+    if (sel && !sel.includes('\n') && sel.length < 200) { input.value = sel; }
+    input.focus(); input.select();
+    scheduleSearch(false, 0);
+  }
+
+  function closeSearch() {
+    S.open = false; S.re = null; S.rows = []; S.cur = -1; S.err = false;
+    clearTimeout(S.timer); S.timer = 0;
+    $('sbar').style.display = 'none';
+    $('b-search')?.classList.remove('on');
+    render();
+  }
+
+  (function buildSearchBar() {
+    const bar = document.createElement('div');
+    bar.id = 'sbar';
+    bar.innerHTML = `<div id="sbox">${codicon('search')}<input id="sq" spellcheck="false" placeholder="Search in logs"><button class="ib" id="sclear" title="Clear">${codicon('close')}</button>` +
+      '<button class="ib opt" id="s-cc" title="Match Case">Cc</button><button class="ib opt" id="s-w" title="Words">W</button><button class="ib opt" id="s-rx" title="Regex">.*</button></div>' +
+      `<span id="scount"></span><button class="ib" id="s-up" title="Previous Occurrence (Shift+Enter)">${codicon('arrow-up')}</button><button class="ib" id="s-down" title="Next Occurrence (Enter)">${codicon('arrow-down')}</button>` +
+      `<button class="ib" id="s-close" title="Close (Esc)">${codicon('close')}</button>`;
+    $('main').parentNode.insertBefore(bar, $('main'));
+    const input = $('sq');
+    const sync = () => {
+      for (const [id, k] of [['s-cc', 'scc'], ['s-w', 'sw'], ['s-rx', 'srx']]) { $(id).classList.toggle('active', !!st[k]); }
+      $('sclear').style.visibility = input.value ? 'visible' : 'hidden';
+    };
+    for (const [id, k] of [['s-cc', 'scc'], ['s-w', 'sw'], ['s-rx', 'srx']]) {
+      $(id).onclick = () => { st[k] = !st[k]; save(); sync(); scheduleSearch(false, 0); input.focus(); };
+    }
+    input.addEventListener('input', () => { sync(); scheduleSearch(false, 120); });
+    input.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') { ev.preventDefault(); go(ev.shiftKey ? -1 : 1); }
+      else if (ev.key === 'Escape') { ev.preventDefault(); closeSearch(); }
+    });
+    $('sclear').onclick = () => { input.value = ''; sync(); scheduleSearch(false, 0); input.focus(); };
+    $('s-up').onclick = () => go(-1);
+    $('s-down').onclick = () => go(1);
+    $('s-close').onclick = closeSearch;
+    document.addEventListener('keydown', (ev) => {
+      if ((ev.metaKey || ev.ctrlKey) && !ev.altKey && ev.key.toLowerCase() === 'f') { ev.preventDefault(); openSearch(); }
+      else if (ev.key === 'F3' && S.open) { ev.preventDefault(); go(ev.shiftKey ? -1 : 1); }
+    });
+    sync();
+  })();
 
   let raf = 0;
   function render() { if (!raf) { raf = requestAnimationFrame(() => { raf = 0; draw(); }); } }
@@ -124,7 +271,10 @@
       const start = Math.max(0, n - WRAP_MAX);
       let h = ''; for (let i = start; i < n; i++) { h += rowHtml(i); }
       win.innerHTML = h;
-      if (stick) { sc.scrollTop = sc.scrollHeight; }
+      if (stick) { sc.scrollTop = sc.scrollHeight; } else if (S.scroll) {
+        S.scroll = false; win.querySelector(`[data-i="${S.rows[S.cur]}"]`)?.scrollIntoView({ block: 'center' });
+      }
+      if (S.open && S.dirty) { scheduleSearch(true, 500); }
       return;
     }
     spacer.style.height = n * H + 'px';
@@ -133,6 +283,7 @@
     let h = ''; for (let i = a; i < b; i++) { h += rowHtml(i); }
     win.style.top = a * H + 'px';
     win.innerHTML = h;
+    if (S.open && S.dirty) { scheduleSearch(true, 500); }
   }
 
   sc.addEventListener('scroll', () => {
@@ -325,7 +476,7 @@
 
   // ---- header ----
   $('fmt').value = st.fmt;
-  $('fmt').onchange = () => { st.fmt = $('fmt').value; save(); render(); };
+  $('fmt').onchange = () => { st.fmt = $('fmt').value; save(); scheduleSearch(false, 0); render(); };
   $('dev').onchange = () => { entries = []; rows = []; vs.postMessage({ type: 'select', serial: $('dev').value }); };
 
   function setStatus(text) {
@@ -347,7 +498,7 @@
         }
         break;
       }
-      case 'reset': entries = []; rows = []; pending = []; pkgMap = {}; stick = true; render(); break;
+      case 'reset': entries = []; rows = []; S.dirty = true; pending = []; pkgMap = {}; stick = true; render(); break;
       case 'batch': if (paused) { pending.push(...m.items); } else { ingest(m.items); render(); } break;
       case 'pkgs': {
         Object.assign(pkgMap, m.map);
