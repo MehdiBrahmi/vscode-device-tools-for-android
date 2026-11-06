@@ -1,10 +1,20 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
-- Device Manager: physical devices now show "Manufacturer Model", `Android 17.0 ("Name") | arm64`, the full API level and the Studio start/stop mirroring button.
-- Emulator rotation buttons now use the emulator rotation sensor like Android Studio (works on the home screen too).
-- Device names now match Android Studio: AVD display name for emulators, "Model API level (serial)" for physical devices (Running Devices and Logcat).
+### Features
+
+- Device Manager: physical devices show "Manufacturer Model", `Android 17.0 ("Name") | arm64`, the full API level and the Studio start/stop mirroring button.
+- Device names match Android Studio: AVD display name for emulators, "Model API level (serial)" for physical devices (Running Devices and Logcat).
+
+### Bug fixes
+
+- Emulator rotation buttons use the emulator rotation sensor like Android Studio (works on the home screen too) and skip the 180° position that phones ignore.
+- The emulator screen is re-fitted automatically after a rotation.
+
+### Chores
+
+- Toolchain: TypeScript 7, @types/node 26, @vscode/vsce 4, Node 22 and GitHub Actions v7.
 
 ## 0.1.1
 
