@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { Avd, Device, adb, listAvds, listDevices, sdkRoot } from './sdk';
 
 interface Row {
-  id: string; name: string; sub: string; api: string; type: 'Virtual' | 'Physical'; running: boolean; startable: boolean;
+  id: string; name: string; sub: string; api: string; type: 'Virtual' | 'Physical'; running: boolean; startable: boolean; mirroring?: boolean;
 }
 
 const RELEASE: Record<number, string> = { 26: '8.0', 27: '8.1', 28: '9', 29: '10', 30: '11', 31: '12', 32: '12L', 33: '13', 34: '14', 35: '15' };
@@ -35,13 +35,13 @@ export class DeviceManagerView implements vscode.WebviewViewProvider {
   private timer?: NodeJS.Timeout;
   private nodes = new Map<string, any>();
   private sig = '';
-  private props = new Map<string, { api: string; sub: string }>();
+  private props = new Map<string, { api: string; name: string; sub: string }>();
 
   constructor(private extPath: string) {}
 
   private icons() {
     const out: Record<string, string> = {};
-    for (const n of ['virtual-light', 'virtual-dark', 'physical-light', 'physical-dark', 'run', 'stop', 'pair-over-wifi']) {
+    for (const n of ['virtual-light', 'virtual-dark', 'physical-light', 'physical-dark', 'run', 'stop', 'mirror-start', 'mirror-stop', 'pair-over-wifi']) {
       out[n] = fs.readFileSync(path.join(this.extPath, 'media', 'icons', `${n}.svg`), 'utf8');
     }
     return out;
@@ -85,12 +85,14 @@ export class DeviceManagerView implements vscode.WebviewViewProvider {
     let p = this.props.get(serial);
     if (!p) {
       try {
-        const rel = (await adb(serial, 'shell', 'getprop', 'ro.build.version.release')).trim();
-        const api = (await adb(serial, 'shell', 'getprop', 'ro.build.version.sdk')).trim();
-        const abi = (await adb(serial, 'shell', 'getprop', 'ro.product.cpu.abi')).trim();
-        p = { api, sub: [`Android ${rel}`, abi].filter(Boolean).join(' | ') };
+        const get = (k: string) => adb(serial, 'shell', 'getprop', k).then((v) => v.trim());
+        const [rel, sdk, full, abi, make, model] = await Promise.all(['ro.build.version.release', 'ro.build.version.sdk', 'ro.build.version.sdk_full', 'ro.product.cpu.abi', 'ro.product.manufacturer', 'ro.product.model'].map(get));
+        const n = parseInt(sdk, 10);
+        const label = Number.isNaN(n) ? `Android ${rel}` : androidLabel(n);
+        const name = model ? (make && !model.toLowerCase().startsWith(make.toLowerCase()) ? `${make[0].toUpperCase()}${make.slice(1)} ${model}` : model) : '';
+        p = { api: full || sdk, name, sub: [label, abi.replace(/-v\d+a$/, '')].filter(Boolean).join(' | ') };
         this.props.set(serial, p);
-      } catch { p = { api: '', sub: serial }; }
+      } catch { p = { api: '', name: '', sub: serial }; }
     }
     return p;
   }
@@ -99,6 +101,7 @@ export class DeviceManagerView implements vscode.WebviewViewProvider {
     if (!this.view) { return; }
     let devices: Device[] = [];
     try { devices = await listDevices(); } catch { /* adb unavailable */ }
+    const mirrored = await Promise.resolve(vscode.commands.executeCommand<string | undefined>('android.mirroredSerial')).catch(() => undefined);
     const rows: Row[] = [];
     const nodes = new Map<string, any>();
     for (const avd of listAvds()) {
@@ -111,7 +114,7 @@ export class DeviceManagerView implements vscode.WebviewViewProvider {
     for (const d of devices.filter((x) => !x.serial.startsWith('emulator-') && x.state === 'device')) {
       const info = await this.physicalInfo(d.serial);
       nodes.set('dev:' + d.serial, d);
-      rows.push({ id: 'dev:' + d.serial, name: d.model?.replace(/_/g, ' ') || d.serial, sub: info.sub, api: info.api, type: 'Physical', running: true, startable: false });
+      rows.push({ id: 'dev:' + d.serial, name: info.name || d.model?.replace(/_/g, ' ') || d.serial, sub: info.sub, api: info.api, type: 'Physical', running: true, startable: false, mirroring: mirrored === d.serial });
     }
     this.nodes = nodes;
     const sig = JSON.stringify(rows);

@@ -20,6 +20,8 @@ export function activate(ctx: vscode.ExtensionContext) {
     vscode.commands.registerCommand('android.screenshot', (arg: any) => arg?.serial && running.screenshot(arg.serial)),
     vscode.commands.registerCommand('android.screenRecord', (arg: any) => arg?.serial && running.toggleRecording(arg.serial)),
     vscode.commands.registerCommand('android.refresh', refresh),
+    vscode.commands.registerCommand('android.mirroredSerial', () => running.mirroredSerial()),
+    vscode.commands.registerCommand('android.stopMirror', () => running.stopMirroring()),
     vscode.commands.registerCommand('android.mirrorDevice', (arg: any) => {
       const d = arg?.kind === 'avd' ? arg.running : arg;
       return running.show(d);

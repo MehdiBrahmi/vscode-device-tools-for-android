@@ -38,7 +38,9 @@
       const b = busy.get(r.id);
       const act = r.startable
         ? `<button class="ib${b ? ' off' : ''}" ${b ? 'disabled' : ''} data-a="${r.running ? 'stop' : 'start'}" title="${r.running ? 'Stop' : 'Launch'}">${icons[r.running ? 'stop' : 'run']}</button>`
-        : '';
+        : r.type === 'Physical'
+          ? `<button class="ib" data-a="${r.mirroring ? 'unmirror' : 'mirror'}" title="${r.mirroring ? 'Stop Mirroring' : 'Show on Running Devices'}">${icons[r.mirroring ? 'mirror-stop' : 'mirror-start']}</button>`
+          : '';
       const sub = b ? (b.state === 'starting' ? 'Starting up' : 'Shutting down') : r.sub;
       const lead = b ? '<span class="codicon codicon-loading codicon-modifier-spin spin"></span>' : r.running ? '<div class="dot"></div>' : '';
       return `<div class="r${sel === r.id ? ' sel' : ''}" data-id="${esc(r.id)}"><div class="lead">${lead}</div>
@@ -85,6 +87,8 @@
     sel = r.id;
     if (a === 'start') { cmd('android.startAvd', r.id); }
     else if (a === 'stop') { cmd('android.stopAvd', r.id); }
+    else if (a === 'mirror') { cmd('android.mirrorDevice', r.id); }
+    else if (a === 'unmirror') { cmd('android.stopMirror'); }
     else if (a === 'more') { const b = ev.target.closest('button').getBoundingClientRect(); menuFor(r, b.left, b.bottom); ev.stopPropagation(); }
     draw();
   });

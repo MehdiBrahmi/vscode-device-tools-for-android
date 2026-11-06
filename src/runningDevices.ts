@@ -82,6 +82,15 @@ export class RunningDeviceView implements vscode.WebviewViewProvider {
     this.restart();
   }
 
+  mirroredSerial(): string | undefined {
+    return this.view?.visible && (this.session || this.emu || this.loop) ? this.serial : undefined;
+  }
+
+  stopMirroring() {
+    this.stop();
+    this.post({ type: 'error', text: 'Mirroring stopped. Select a device or refresh to resume.' });
+  }
+
   private post(m: unknown) { this.view?.webview.postMessage(m); }
 
   private stop() {
