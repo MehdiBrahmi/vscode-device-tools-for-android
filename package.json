@@ -1,0 +1,227 @@
+{
+  "name": "device-tools-for-android",
+  "displayName": "Device Tools for Android",
+  "description": "Mirror and control Android emulators and devices, manage virtual devices (AVDs) and browse Logcat without leaving VS Code.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-id",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/REPLACE_ME/device-tools-for-android.git"
+  },
+  "bugs": {
+    "url": "https://github.com/REPLACE_ME/device-tools-for-android/issues"
+  },
+  "homepage": "https://github.com/REPLACE_ME/device-tools-for-android#readme",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e1f22",
+    "theme": "dark"
+  },
+  "keywords": [
+    "android",
+    "emulator",
+    "avd",
+    "adb",
+    "logcat",
+    "scrcpy",
+    "device manager",
+    "mirroring",
+    "flutter",
+    "kotlin"
+  ],
+  "engines": {
+    "vscode": "^1.85.0",
+    "node": ">=18"
+  },
+  "categories": [
+    "Debuggers",
+    "Other"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Runs adb, emulator and avdmanager from the Android SDK."
+    },
+    "virtualWorkspaces": false
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "scripts": {
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "typecheck": "tsc -p . --noEmit",
+    "vscode:prepublish": "npm run typecheck && node esbuild.js --production",
+    "package": "vsce package",
+    "test": "node --test tests/*.test.js",
+    "clean": "rm -rf dist *.vsix"
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "androidTools",
+          "title": "Device Tools",
+          "icon": "media/icons/device-manager.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "androidRunning",
+          "title": "Running Devices",
+          "icon": "media/icons/running-devices.svg"
+        },
+        {
+          "id": "androidLogcat",
+          "title": "Logcat",
+          "icon": "media/icons/logcat.svg"
+        }
+      ]
+    },
+    "views": {
+      "androidTools": [
+        {
+          "type": "webview",
+          "id": "android.deviceManager",
+          "name": "Device Manager"
+        }
+      ],
+      "androidRunning": [
+        {
+          "type": "webview",
+          "id": "android.runningDevice",
+          "name": "Running Devices"
+        }
+      ],
+      "androidLogcat": [
+        {
+          "type": "webview",
+          "id": "android.logcat",
+          "name": "Logcat"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "android.refresh",
+        "title": "Device Tools: Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "android.createAvd",
+        "title": "Device Tools: Create Virtual Device",
+        "icon": "$(add)"
+      },
+      {
+        "command": "android.startAvd",
+        "title": "Device Tools: Start Emulator",
+        "icon": "$(play)"
+      },
+      {
+        "command": "android.coldBootAvd",
+        "title": "Device Tools: Cold Boot Emulator"
+      },
+      {
+        "command": "android.stopAvd",
+        "title": "Device Tools: Stop Emulator",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "android.editAvd",
+        "title": "Device Tools: Edit Virtual Device",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "android.wipeAvd",
+        "title": "Device Tools: Wipe Data"
+      },
+      {
+        "command": "android.deleteAvd",
+        "title": "Device Tools: Delete Virtual Device",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "android.mirrorDevice",
+        "title": "Device Tools: Show in Running Devices",
+        "icon": "$(device-mobile)"
+      },
+      {
+        "command": "android.pairDevice",
+        "title": "Device Tools: Connect Device over Wi-Fi (adb connect)"
+      },
+      {
+        "command": "android.showLogcat",
+        "title": "Device Tools: Show Logcat"
+      },
+      {
+        "command": "android.extendedControls",
+        "title": "Device Tools: Extended Controls"
+      },
+      {
+        "command": "android.addDevice",
+        "title": "Device Tools: Add Device…",
+        "icon": "$(add)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "android.refresh",
+          "when": "view == android.deviceManager",
+          "group": "navigation"
+        },
+        {
+          "command": "android.addDevice",
+          "when": "view == android.runningDevice",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Device Tools for Android",
+      "properties": {
+        "android.sdkPath": {
+          "type": "string",
+          "default": "",
+          "description": "Android SDK path (defaults to ANDROID_HOME / ANDROID_SDK_ROOT / ~/Library/Android/sdk)."
+        },
+        "android.embeddedEmulator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Start emulators without their own window and display them in the Running Devices view (gRPC)."
+        },
+        "android.mirrorIntervalMs": {
+          "type": "number",
+          "default": 150,
+          "description": "Minimum delay between screen captures in the screenshot fallback mode (physical devices without scrcpy support)."
+        },
+        "android.logcat.maxEntries": {
+          "type": "number",
+          "default": 50000,
+          "description": "Maximum number of Logcat entries kept in memory."
+        },
+        "android.fixSoftwareRendering": {
+          "type": "boolean",
+          "default": true,
+          "description": "Before launching an AVD that has hw.gpu.enabled=no (the avdmanager default, very slow), switch it to host GPU rendering by editing its config.ini."
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.7",
+    "@grpc/proto-loader": "^0.8.1"
+  },
+  "author": {
+    "name": "Mehdi Brahmi"
+  }
+}

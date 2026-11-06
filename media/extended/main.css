@@ -1,0 +1,21 @@
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:flex;font-family:var(--vscode-font-family);color:var(--vscode-foreground);font-size:14px}
+#nav{width:220px;flex:none;background:var(--vscode-sideBar-background);border-right:1px solid var(--vscode-panel-border,#444);padding:8px 0;overflow:auto}
+#nav div{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer}
+#nav div:hover{background:var(--vscode-list-hoverBackground)}
+#nav div.on{background:#2064d0;color:#fff}
+#nav .codicon{font-size:18px}
+#page{flex:1;padding:24px 32px;overflow:auto;max-width:900px}
+h3{font-weight:400;margin:0 0 14px;font-size:15px;opacity:.85}
+.row{display:flex;align-items:center;gap:12px;margin:12px 0;flex-wrap:wrap}
+.row label{min-width:140px;opacity:.8}
+input,select{background:var(--vscode-input-background);color:var(--vscode-input-foreground);border:1px solid var(--vscode-input-border,#555);border-radius:3px;padding:4px 8px;font:inherit}
+input[type=range]{padding:0;flex:1;max-width:320px}
+button{background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground);border:1px solid var(--vscode-panel-border,#555);border-radius:3px;padding:6px 14px;cursor:pointer;font:inherit}
+button:hover{background:var(--vscode-button-secondaryHoverBackground)}
+button.pri{background:var(--vscode-button-background);color:var(--vscode-button-foreground)}
+.dpad{display:grid;grid-template-columns:repeat(3,56px);grid-template-rows:repeat(3,56px);gap:6px}
+.dpad button{padding:0;font-size:20px}
+#status{position:fixed;bottom:12px;right:20px;font-size:12px;opacity:.8}
+.big{font-size:20px;margin:6px 0}

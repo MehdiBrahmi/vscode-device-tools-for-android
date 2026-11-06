@@ -1,0 +1,19 @@
+Device Tools for Android
+Copyright (c) 2026 Mehdi Brahmi — MIT License (see LICENSE).
+
+This product bundles third-party material. The full list, with versions and licenses,
+is in THIRD_PARTY_NOTICES.md. Main items:
+
+- Icons and illustrations in media/icons derived from Android Studio (artwork.jar),
+  Copyright (C) The Android Open Source Project, Apache License 2.0. Some SVGs were modified
+  (colors replaced by currentColor).
+- media/icons/lc-*.svg derived from the IntelliJ Platform, Copyright JetBrains s.r.o.
+  and contributors, Apache License 2.0.
+- resources/scrcpy-server.jar: scrcpy, Copyright (C) Genymobile, Apache License 2.0
+  (resources/scrcpy-LICENSE.txt). Source: https://github.com/Genymobile/scrcpy
+- media/codicons: Microsoft Codicons (CC-BY-4.0) and code (MIT).
+- media/logcat/fonts: JetBrains Mono, SIL Open Font License 1.1.
+- @grpc/grpc-js, @grpc/proto-loader: Apache License 2.0; protobufjs: BSD-3-Clause.
+
+"Android" and the Android robot are trademarks of Google LLC. This extension is not
+affiliated with, endorsed by, or sponsored by Google or JetBrains.

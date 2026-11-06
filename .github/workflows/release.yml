@@ -1,0 +1,29 @@
+name: Release
+
+# Publishes to the VS Code Marketplace and Open VSX when a version tag (v*) is pushed.
+# Required repository secrets: VSCE_PAT (Azure DevOps token), OVSX_PAT (open-vsx.org token).
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npx vsce package --out device-tools-for-android.vsix
+      - run: npx vsce publish --packagePath device-tools-for-android.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - run: npx ovsx publish device-tools-for-android.vsix
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: device-tools-for-android.vsix

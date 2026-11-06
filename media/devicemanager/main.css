@@ -1,0 +1,42 @@
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;overflow:hidden}
+body{display:flex;flex-direction:column;color:var(--vscode-foreground);font-family:var(--vscode-font-family);font-size:13px}
+svg{width:16px;height:16px;display:block}
+.dark-only,.light-only{display:none}
+body:not(.vscode-light) .dark-only{display:block}
+body.vscode-light .light-only{display:block}
+.ib{background:transparent;border:0;color:var(--vscode-icon-foreground);width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border-radius:5px;flex:none}
+.ib:hover{background:var(--vscode-toolbar-hoverBackground)}
+.ib .codicon{font-size:18px}
+#bar{display:flex;align-items:center;gap:4px;padding:6px 8px;border-bottom:1px solid var(--vscode-panel-border,#444)}
+#bar .sep{width:1px;height:20px;background:var(--vscode-panel-border,#444);margin:0 4px}
+#bar svg{width:20px;height:20px}
+#head,.r{display:grid;grid-template-columns:24px minmax(100px,1fr) minmax(22px,44px) minmax(22px,64px) 56px;column-gap:4px;align-items:center}
+#head{border-bottom:1px solid var(--vscode-panel-border,#444);height:32px;font-size:13px;color:var(--vscode-foreground)}
+#head div{cursor:pointer;user-select:none;height:100%;display:flex;align-items:center;box-sizing:border-box}
+#head div:nth-child(n+3){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:32px;border-left:1px solid var(--vscode-panel-border,#444);padding-left:6px}
+#head .n{display:flex;align-items:center;gap:6px}
+#list{flex:1;overflow:auto}
+.r{height:46px;cursor:default;border-bottom:0}
+.r:hover{background:var(--vscode-list-hoverBackground)}
+.r.sel{background:#2e436e;color:#fff}
+body.vscode-light .r.sel{background:#c9dcff;color:#000}
+.dot{width:10px;height:10px;border-radius:50%;background:#57965c}
+.nm{display:flex;align-items:center;gap:10px;min-width:0}
+.nm svg{width:20px;height:20px;flex:none}
+.nm .t{min-width:0}
+.nm .t b{display:block;font-weight:400;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm .t small{display:block;color:var(--vscode-descriptionForeground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.r.sel small{color:inherit;opacity:.75}
+.c{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
+.act{display:flex;align-items:center;justify-content:flex-end;gap:0;padding-right:4px}
+.act svg{width:18px;height:18px}
+.menu{position:fixed;z-index:10;background:var(--vscode-menu-background);color:var(--vscode-menu-foreground);border:1px solid var(--vscode-menu-border,#555);border-radius:4px;padding:4px 0;min-width:180px;box-shadow:0 2px 8px #0008;font-size:12px}
+.menu div{padding:4px 14px;cursor:pointer;white-space:nowrap}
+.menu div:hover{background:var(--vscode-menu-selectionBackground);color:var(--vscode-menu-selectionForeground)}
+.menu hr{border:0;border-top:1px solid var(--vscode-menu-separatorBackground);margin:4px 0}
+#empty{padding:16px;color:var(--vscode-descriptionForeground)}
+
+.lead{display:flex;align-items:center;justify-content:center}
+.spin{font-size:16px;opacity:.8}
+.ib.off{opacity:.4;pointer-events:none}

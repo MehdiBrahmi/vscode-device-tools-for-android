@@ -1,0 +1,82 @@
+@font-face{font-family:"JetBrains Mono";font-weight:400;src:url("fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-weight:700;src:url("fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2")}
+
+:root{
+  --lv-V-bg:#d6d6d6;--lv-V-fg:#000;--lv-D-bg:#305d78;--lv-D-fg:#bbb;--lv-I-bg:#6a8759;--lv-I-fg:#e9f5e6;
+  --lv-W-bg:#bbb529;--lv-W-fg:#000;--lv-E-bg:#cf5b56;--lv-E-fg:#000;--lv-A-bg:#8b3c3c;--lv-A-fg:#fff;
+  --msg-V:#bbb;--msg-D:#299999;--msg-I:#abc023;--msg-W:#bbb529;--msg-E:#ff6b68;--msg-A:#ff6b68;
+  --kv-bg:#4d694c;--kv-fg:#fefefe;--muted:#808080;--tag-s:55%;--tag-l:65%;
+}
+body.vscode-light{
+  --lv-V-bg:#d6d6d6;--lv-V-fg:#000;--lv-D-bg:#cfe7ff;--lv-D-fg:#000;--lv-I-bg:#e9f5e6;--lv-I-fg:#414d41;
+  --lv-W-bg:#f5eac1;--lv-W-fg:#000;--lv-E-bg:#cf5b56;--lv-E-fg:#fff;--lv-A-bg:#7f0000;--lv-A-fg:#fff;
+  --msg-V:#000;--msg-D:#389fd6;--msg-I:#59a869;--msg-W:#645607;--msg-E:#cd0000;--msg-A:#cd0000;
+  --kv-bg:#e9f5e6;--kv-fg:inherit;--tag-s:60%;--tag-l:35%;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;overflow:hidden}
+body{display:flex;flex-direction:column;color:var(--vscode-foreground);font-family:var(--vscode-font-family);font-size:var(--vscode-font-size)}
+svg{width:16px;height:16px;display:block}
+
+#header{display:flex;gap:6px;align-items:center;padding:4px 6px;border-bottom:1px solid var(--vscode-panel-border,#444)}
+select{background:var(--vscode-dropdown-background);color:var(--vscode-dropdown-foreground);border:1px solid var(--vscode-dropdown-border);padding:2px 4px;border-radius:2px;max-width:220px}
+#filterbox{flex:1;min-width:120px;display:flex;align-items:center;position:relative;background:var(--vscode-input-background);border:1px solid var(--vscode-input-border,transparent);border-radius:3px;height:24px}
+#filterbox:focus-within{border-color:var(--vscode-focusBorder)}
+#filterbox.error{border-color:var(--vscode-inputValidation-errorBorder,#f14c4c)}
+#editor{position:relative;flex:1;height:100%;font-family:"JetBrains Mono",var(--vscode-editor-font-family),monospace;font-size:12px}
+#hl,#q{position:absolute;inset:0;padding:0 4px;font:inherit;line-height:22px;white-space:pre;overflow:hidden;letter-spacing:0}
+#hl{color:transparent;pointer-events:none}
+#hl .kv{background:var(--kv-bg);border-radius:3px;box-shadow:0 0 0 1px var(--kv-bg)}
+body:not(.vscode-light) #hl .kv{color:transparent}
+#q{background:transparent;border:0;outline:0;color:var(--vscode-input-foreground)}
+#q::placeholder{color:var(--vscode-input-placeholderForeground)}
+.ib{background:transparent;border:0;color:var(--vscode-icon-foreground);width:24px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border-radius:4px;flex:none}
+.ib:hover{background:var(--vscode-toolbar-hoverBackground)}
+.ib.on{background:var(--vscode-toolbar-activeBackground,var(--vscode-toolbar-hoverBackground))}
+.ib .codicon{font-size:16px}
+#fav.active svg path,#fav.active svg{color:#ffaf0f}
+#count{font-size:11px;opacity:.6;white-space:nowrap}
+
+#main{flex:1;min-height:0;display:flex}
+#side{display:flex;flex-direction:column;gap:2px;padding:4px 2px;border-right:1px solid var(--vscode-panel-border,#444)}
+#sc{flex:1;min-width:0;position:relative;overflow:auto;background:var(--vscode-editor-background);font-family:"JetBrains Mono",var(--vscode-editor-font-family),monospace;font-size:12px}
+#spacer{position:absolute;top:0;left:0;width:1px;pointer-events:none}
+#win{position:absolute;top:0;left:0;min-width:100%}
+.row{white-space:pre;display:flex;align-items:center;padding:0 6px;color:var(--c)}
+.row>span{display:inline-block;overflow:hidden;text-overflow:ellipsis;vertical-align:top;flex:none}
+.ts{width:23ch;color:var(--muted)}.pt{width:11ch;color:var(--muted)}.tg{width:23ch}.pk{width:30ch;color:var(--muted)}
+.lvb{width:3ch;text-align:center;border-radius:3px;margin:0 1ch;background:var(--b);color:var(--f)}
+.ctime{width:12ch;color:var(--muted)}
+.m{overflow:visible!important;flex:1 1 auto!important}
+.wrap #win{position:static}.wrap .row{white-space:pre-wrap;align-items:flex-start}.wrap .m{white-space:pre-wrap;word-break:break-word}
+.lv-V{--c:var(--msg-V);--b:var(--lv-V-bg);--f:var(--lv-V-fg)}.lv-D{--c:var(--msg-D);--b:var(--lv-D-bg);--f:var(--lv-D-fg)}
+.lv-I{--c:var(--msg-I);--b:var(--lv-I-bg);--f:var(--lv-I-fg)}.lv-W{--c:var(--msg-W);--b:var(--lv-W-bg);--f:var(--lv-W-fg)}
+.lv-E{--c:var(--msg-E);--b:var(--lv-E-bg);--f:var(--lv-E-fg)}.lv-A{--c:var(--msg-A);--b:var(--lv-A-bg);--f:var(--lv-A-fg)}
+#status{position:absolute;right:16px;bottom:8px;font-size:11px;padding:2px 8px;border-radius:3px;background:var(--vscode-badge-background);color:var(--vscode-badge-foreground);display:none}
+#empty{position:absolute;top:12px;left:16px;font-family:var(--vscode-font-family);color:var(--vscode-descriptionForeground)}
+
+.menu{position:fixed;z-index:10;background:var(--vscode-menu-background);color:var(--vscode-menu-foreground);border:1px solid var(--vscode-menu-border,#555);border-radius:4px;padding:4px 0;min-width:180px;box-shadow:0 2px 8px #0008;font-size:12px}
+.menu div{padding:3px 14px;cursor:pointer;white-space:nowrap}
+.menu div:hover{background:var(--vscode-menu-selectionBackground);color:var(--vscode-menu-selectionForeground)}
+.menu hr{border:0;border-top:1px solid var(--vscode-menu-separatorBackground);margin:4px 0}
+#hist{max-height:240px;overflow:auto}
+#hist .h{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace}
+#hist .sec{opacity:.6;font-size:10px;padding:2px 14px;cursor:default}
+#hist .sec:hover{background:transparent;color:inherit}
+
+#sugg{display:none;position:absolute;left:0;top:100%;margin-top:4px;min-width:360px;max-width:90vw;max-height:260px;overflow:auto;z-index:20;background:var(--vscode-editorSuggestWidget-background,var(--vscode-menu-background));color:var(--vscode-editorSuggestWidget-foreground,var(--vscode-foreground));border:1px solid var(--vscode-editorSuggestWidget-border,var(--vscode-menu-border,#555));border-radius:4px;box-shadow:0 2px 8px #0008;font-size:12px;padding:2px 0}
+#sugg .si{display:flex;justify-content:space-between;gap:24px;padding:3px 10px;cursor:pointer;white-space:nowrap;font-family:"JetBrains Mono",var(--vscode-editor-font-family),monospace}
+#sugg .si .d{opacity:.6;font-family:var(--vscode-font-family)}
+#sugg .si.on,#sugg .si:hover{background:var(--vscode-editorSuggestWidget-selectedBackground,var(--vscode-list-activeSelectionBackground));color:var(--vscode-list-activeSelectionForeground,inherit)}
+
+.menu.hist{max-height:60vh;overflow:auto;padding:2px 0;font-size:13px}
+.menu.hist .hrow{display:flex;align-items:center;gap:8px;padding:5px 12px;font-family:"JetBrains Mono",var(--vscode-editor-font-family),monospace;font-size:12px}
+.menu.hist .hrow .t{flex:1;overflow:hidden;text-overflow:ellipsis}
+.menu.hist .hrow .n{opacity:.6;min-width:26px;text-align:right}
+.menu.hist .hrow .x{width:16px;visibility:hidden;display:inline-flex;opacity:.8}
+.menu.hist .hrow .star svg{width:12px;height:12px;vertical-align:-2px}
+.menu.hist .hrow:hover .x{visibility:visible}
+
+#cc{width:auto;padding:0 5px;font-size:12px;font-weight:600}
+#cc.active{background:var(--vscode-inputOption-activeBackground);outline:1px solid var(--vscode-inputOption-activeBorder,transparent)}
+.hsep{height:1px;background:var(--vscode-panel-border,#555);margin:4px 6px}
