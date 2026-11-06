@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1
 
 - Logcat: search bar (`Cmd/Ctrl+F`) with highlighting, match counter, next/previous, match case, whole word and regex.
 - Logcat: fix `level:` filter.

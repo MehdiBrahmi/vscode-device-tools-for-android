@@ -2,7 +2,7 @@
   "name": "device-tools-for-android",
   "displayName": "Device Tools for Android",
   "description": "Mirror and control Android emulators and devices, manage virtual devices (AVDs) and browse Logcat without leaving VS Code.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "MehdiBrahmi",
   "license": "MIT",
   "repository": {
