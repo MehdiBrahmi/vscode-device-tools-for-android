@@ -54,7 +54,7 @@
   }
 
   // ---- data ----
-  const filterView = (e) => ({ tag: e.tag, pkg: e.pkg, lines: e.lines, lv: e.lvn, rx: e.rx, pid: e.pid, tid: e.tid });
+  const filterView = (e) => ({ tag: e.tag, pkg: e.pkg, lines: e.lines, lv: e.lv, lvn: e.lvn, rx: e.rx, pid: e.pid, tid: e.tid });
   const visible = (e) => compiled.test(filterView(e));
 
   function pushRows(e) { for (let i = 0; i < e.lines.length; i++) { rows.push({ e, i }); } }
