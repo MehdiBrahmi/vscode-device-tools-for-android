@@ -78,6 +78,8 @@ export class EmulatorSession {
     this.stream.on('data', (m: any) => {
       const w = m.format.width, h = m.format.height;
       // Rotation changes the frame shape: keep the native size in sync so touches map correctly.
+      this.quadrants = ['PORTRAIT', 'LANDSCAPE', 'REVERSE_PORTRAIT', 'REVERSE_LANDSCAPE'].indexOf(m.format.rotation?.rotation);
+      if (this.quadrants < 0) { this.quadrants = 0; }
       this.lastScale = Math.max(this.native.w, this.native.h) / Math.max(w, h);
       this.h.onFrame({ w, h, rgba: m.image });
     });
@@ -86,6 +88,14 @@ export class EmulatorSession {
   }
 
   private lastScale = 1;
+  private quadrants = 0;
+
+  /** Same mechanism as Android Studio: drive the emulator's rotation sensor, which also rotates launchers that ignore the user-rotation setting. */
+  rotate(dir: number) {
+    const q = (this.quadrants + (dir < 0 ? 1 : 3)) & 3;
+    const angle = [0, 90, -180, -90][q];
+    this.client.setPhysicalModel({ target: 'ROTATION', value: { data: [0, 0, angle] } }, () => {});
+  }
 
   /** Convert normalized (0..1) coordinates to the emulator's native pixel space. */
   private toNative(nx: number, ny: number, fw: number, fh: number) {

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Device Manager: physical devices now show "Manufacturer Model", `Android 17.0 ("Name") | arm64`, the full API level and the Studio start/stop mirroring button.
+- Emulator rotation buttons now use the emulator rotation sensor like Android Studio (works on the home screen too).
 - Device names now match Android Studio: AVD display name for emulators, "Model API level (serial)" for physical devices (Running Devices and Logcat).
 
 ## 0.1.1

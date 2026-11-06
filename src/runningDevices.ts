@@ -225,7 +225,7 @@ export class RunningDeviceView implements vscode.WebviewViewProvider {
       case 'openDM': vscode.commands.executeCommand('android.deviceManager.focus'); return;
       case 'viewport': this.viewport = { w: Math.max(200, m.w), h: Math.max(200, m.h) }; this.emu?.setViewport(this.viewport); return;
       case 'ack': this.inflight = false; return this.flush();
-      case 'rotate': if (s) { return this.rotate(s, m.dir); } return;
+      case 'rotate': if (this.emu) { this.emu.rotate(m.dir); return; } if (s) { return this.rotate(s, m.dir); } return;
       case 'record': if (s) { return this.toggleRecording(s); } return;
       case 'noDecoder': return this.fallback('screencap', 'Video decoding unavailable in this VS Code; using screenshot mode');
       case 'decodeError': return this.fallback('screencap', `Decoder error: ${m.text}; using screenshot mode`);
